@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>X Project Sort Demo</title>
+  <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+  <link rel="import" href="x-sort.html" />
+  
+</head>
+<body>
+  <template id="auto" is="auto-binding">
+    <x-sort sortOptions="{{sortOptions}}" attachedArray="{{data}}" sortedArray="{{sortedData}}"></x-sort>
+    <ul>
+      <template repeat="{{elem in sortedData}}">
+        <li>{{elem.foo}}, {{elem.bar}}</li>
+      </template>
+    </ul>
+  </template>
+  <script>
+    var t = document.querySelector('template#auto');
+
+    t.sortOptions = [
+      {name: 'foo', title: 'FOO the string', target: ['foo'], dataType: 'string'},
+      {name: 'bar', title: 'BAR the number', target: ['bar'], dataType: 'number'}
+    ];
+
+    t.data = [
+      {foo: 'banana', bar: 3},
+      {foo: 'gelato', bar: 1},
+      {foo: 'babble', bar: 2}
+    ];
+  </script>
+</body>
+</html>

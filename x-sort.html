@@ -1,0 +1,105 @@
+<!--
+/**
+ * <x-sort></x-sort>
+ *
+ * @author iamlukechang@gmail.com (Luke Chang)
+ */
+-->
+
+<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../core-selector/core-selector.html" />
+
+<polymer-element name="x-sort" attributes="sortOptions attachedArray sortedArray">
+  <template>
+    <link rel="stylesheet" href="x-sort.css">
+    <core-selector on-core-select="{{handleSelectSortingItem}}">
+      <template repeat="{{opt in sortOptions}}">
+        <div>{{opt.title || opt.name}}</div>
+      </template>
+    </core-selector>
+  </template>
+  <script>
+    (function () {
+      /**
+       * Recursively get the target property value in an object, used in each
+       * checker to get the target value which is going to be compared
+       *
+       * Ex:
+       *   getTargetProperty({foo: [{bar: 'banana'}, {bar: 'gelato'}, ...]},
+       *                     ['foo', 1, 'bar']); // 'gelato'
+       *
+       * @private
+       * @param obj {object | array}
+       * @param expression {array} An array of string or number which represent
+       *        the target property
+       */
+      function getTargetProperty(obj, expression, expressionPointer) {
+        expressionPointer = expressionPointer || 0;
+
+        var key = expression[expressionPointer];
+
+        if (typeof obj !== 'object' || obj === null || typeof key === 'undefined') {
+          return obj;
+        } else {
+          return getTargetProperty(obj[key], expression, expressionPointer + 1);
+        }
+      }
+
+      Polymer({
+        /**
+         * The original un-filtered array
+         */
+        attachedArray: [],
+
+        /**
+         * An array host the filterd result
+         */
+        sortedArray: [],
+
+        _sorted: false,
+        target: [],
+
+        created: function () {
+          //TODO: Allow custom compare function
+          this.compare = function(a, b) {
+            var targetA = getTargetProperty(a, this.target),
+                targetB = getTargetProperty(b, this.target);
+    
+            if (targetA > targetB || !targetB) return 1;
+            if (targetA < targetB || !targetA) return -1;
+            return 0;
+          }.bind(this);
+        },
+
+        /**
+         * Sort an array
+         *
+         * @param [arr] {array}
+         */
+        sort: function (arr) {
+          if (this.target.length == 0) return;
+
+          arr = arr || this.sortedArray;
+
+          return (this._sorted) ? arr.reverse() : arr.sort(this.compare);
+        },
+
+        attachedArrayChanged: function (oldVal, newVal) {
+          if (Array.isArray(newVal)) this.sortedArray = newVal.slice();
+          this.sort();
+        },
+
+        targetChanged: function () {
+          this._sorted = false;
+        },
+
+        handleSelectSortingItem: function (event, detail, sender) {
+          var target = this.sortOptions[sender.selected].target;
+          if (target) this.target = target;
+
+          this.sort();
+        }
+      });
+    })();
+  </script>
+</polymer-element>

@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+:host::shadow > core-selector > div {
+  height: 42px;
+  line-height: 42px;
+  border-top: 1px solid #ccc;
+  padding: 0 35px;
+}
+
+:host::shadow > core-selector > div:hover {
+  cursor: pointer;
+}
+
+:host::shadow > core-selector > div.core-selected {
+  background: #aaa;
+}
